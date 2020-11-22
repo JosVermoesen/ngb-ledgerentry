@@ -1,0 +1,94 @@
+<div class="card card-body mb-3">
+  <div *ngIf="basket$">
+    <tabset>
+      <tab heading="Entry Lines" [disabled]="!ledgerEntryHeaderForm.valid">
+        <div *ngIf="ledgerEntryHeaderForm.valid">
+          <form [formGroup]="ledgerEntryForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+              <input formControlName="id" hidden>
+              <div class="btn-group" btnRadioGroup formControlName="dcOption">
+                <label btnRadio="D" class="btn btn-primary btn-sm" tabindex="0" role="button">Debit</label>
+                <label btnRadio="C" class="btn btn-primary btn-sm" tabindex="0" role="button">Credit</label>
+                <label btnRadio="T" class="btn btn-primary btn-sm mr-1" tabindex="0" role="button">Debit/Credit</label>
+                <div *ngIf="!readyForBooking">
+                  <div *ngIf="(basketSolde$ | async)">
+                    <button (click)="checkBalance()" type="button" class="btn btn-warning btn-sm">Solde:
+                      {{(basketSolde$ | async ).ctrlSolde | currency:'EUR'}}</button>
+                  </div>
+                </div>
+                <div *ngIf="readyForBooking">
+                  <button (click)="onBooking()" type="button" class="btn btn-success btn-sm">Book Entry</button>
+                </div>
+              </div>
+              <input formControlName="amount" type="number" class="form-control" placeholder="Add an amount">
+
+              <div *ngIf="ledgerEntryForm.value.dcOption === 'D'">
+                <input formControlName="account" type="text" class="form-control"
+                  placeholder="Add account number for debit">
+              </div>
+              <div *ngIf="ledgerEntryForm.value.dcOption === 'C'">
+                <input formControlName="account" type="text" class="form-control"
+                  placeholder="Add account number for credit">
+              </div>
+              <div *ngIf="ledgerEntryForm.value.dcOption == 'T'">
+                <input formControlName="account" type="text" class="form-control"
+                  placeholder="Add account number for debit">
+                <input formControlName="tAccount" type="text" class="form-control"
+                  placeholder="Add account number for credit">
+              </div>
+            </div>
+
+            <input type="submit" class="btn btn-primary mr-1" value="{{btnAddOrEdit}}"
+              [disabled]="!ledgerEntryForm.valid">
+            <button type="button" class="btn btn-warning mr-1" (click)="clearState()">Ignore</button>
+            <!-- <button type="button" class="btn btn-danger" (click)="clearEntry()">Remove All</button> -->
+          </form>
+        </div>
+
+        <div *ngIf="!ledgerEntryHeaderForm.valid">
+          <br>
+          <p>Set description info & booking period first</p>
+        </div>
+
+        <div *ngIf="ledgerEntryForm.valid">
+          <div *ngIf="(basket$ | async) === null">
+            <p>Add ledgerentries</p>
+          </div>
+        </div>
+
+        <div *ngIf="(basket$ | async) as basket">
+          <ul class="list-group">
+            <li *ngFor="let item of basket.items" [class.list-group-item-secondary]="selectedBasketItem === item"
+              class="list-group-item d-flex justify-content-between align-items-center">
+              <a class="nav-item" (click)="onSelect(item)">{{ item.dcOption }}: {{ item.account }}</a>
+              <a>{{ item.tAccount }}</a>
+              <div [ngStyle]="{'color':getColor(item.dcOption)}">
+                <span>{{ item.amount | currency:'EUR' }}</span>
+              </div>
+              <i (click)="onDelete(item)" class="fa fa-remove"></i>
+            </li>
+          </ul>
+        </div>
+
+        <div *ngIf="!loaded">
+          <p>Busy...</p>
+        </div>
+      </tab>
+      <tab heading="Info & Periode">
+        <form [formGroup]="ledgerEntryHeaderForm">
+          <div class="form-group">
+            <input formControlName="description" type="text" class="form-control" placeholder="Add a description">
+            <input class="form-control" class="form-control" #datepickerYMD="bsDatepicker" bsDatepicker
+              formControlName="lDate" placeholder="Add a date"
+              [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-default' }">
+          </div>
+        </form>
+      </tab>
+      <tab heading="Data (Json)">
+        <div *ngIf="(basket$ | async)">
+          <pre class="card card-block card-header">{{(basket$ | async ) | json}}</pre>
+        </div>
+      </tab>
+    </tabset>
+  </div>
+</div>
