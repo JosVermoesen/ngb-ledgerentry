@@ -34,12 +34,12 @@ For use of primeNG, Icons and Flex, add into your global styles.scss:
 - Generate modules ex. an a home module: `ng generate module pages/home --route home --module app.module`
 - Generate modules ex. a contact module: `ng generate module pages/contact --route contact --module app.module`
 
-## Updating Angular 10
+## Updating Angular 11
 
-This app is on Angular 10.
+This app is on Angular 11.
 Before starting an update to a later version, you always have to commit first
 
-updating within latest Angular 10:
-`ng update @angular/cli@10 @angular/core@10`
+updating within latest Angular 11:
+`ng update @angular/cli@11 @angular/core@11`
 
 Follow the instructions eventualy for fixes
